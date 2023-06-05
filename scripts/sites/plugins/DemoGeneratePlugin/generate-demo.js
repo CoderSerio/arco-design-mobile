@@ -11,11 +11,11 @@ const compositeCompFolder = 'sites/mobile/pages/composite-comp';
 const compositeFolder = 'sites/composite-comp';
 const srcFolder = 'packages/arcodesign';
 const packageName = '@arco-design/mobile-react';
-const compFolder = path.join(srcFolder, 'components');
-const compPath = path.join(rootPath, compFolder);
-const sitePath = path.join(rootPath, siteFolder);
-const compositeCompPath = path.join(rootPath, compositeCompFolder);
-const compositePath = path.join(rootPath, compositeFolder);
+const compFolder = path.posix.join(srcFolder, 'components');
+const compPath = path.posix.join(rootPath, compFolder);
+const sitePath = path.posix.join(rootPath, siteFolder);
+const compositeCompPath = path.posix.join(rootPath, compositeCompFolder);
+const compositePath = path.posix.join(rootPath, compositeFolder);
 
 function renderSource({ comp, demoName, depsCompSet, language, compileEnv, demoPath, sitePath }) {
     if (!/^\w+.*\w+$/g.test(demoName)) return;
@@ -25,11 +25,14 @@ function renderSource({ comp, demoName, depsCompSet, language, compileEnv, demoP
     const reg = new RegExp(packageName, 'g');
 
     let order = 0;
-    
+
     renderer.code = code => {
         const filename = `_${utils.getCompName(demoName)}`;
-        const content = `import React from 'react';
-${code.replace(reg, `../../../../../${compFolder}`).replace(/\/esm\//g, '/')}`;
+        const content = `import React from 'react';\n${code.replace(
+            reg, `../../../../../${compFolder}`
+        ).replace(
+            /\/esm\//g, '/'
+        )}`;
 
         fs.mkdirpSync(docPath);
         const demoFileName = compileEnv === 'vite' ? `${filename}.jsx` : `${filename}.js`;
@@ -167,7 +170,7 @@ function generateSiteDemo({
             if (/^_/.test(comp)) {
                 return resolve()
             }
-        
+
             depsCompSet.add(comp);
 
             const docPath = path.join(sitePath, comp);
@@ -181,7 +184,7 @@ function generateSiteDemo({
             }
             const demoSource = [];
             let importStr = `import React from 'react';\n`;
-            
+
             demos.forEach(name => {
                 if (name.indexOf('.md') < 0) {
                     return resolve();
@@ -343,9 +346,9 @@ function generateSiteCompositeDemo({
                     demoCompSet.add(comp);
                 }
             });
-    
+
             demoSource.sort((a, b) => a.order - b.order);
-    
+
             const demoStylePath = path.join(demoPath, 'style');
             if (fs.existsSync(demoStylePath)) {
                 const styles = fs.readdirSync(demoStylePath);
